@@ -1,5 +1,6 @@
 // Get UI elements
 let form = document.querySelector("#book-form");
+let bookList = document.querySelector("#book-list");
 // Book Class
 class Book {
     constructor(title, author, isbn) {
@@ -10,10 +11,8 @@ class Book {
 }
 // UI class
 class UI {
-    constructor() {
 
-    }
-    addToBookList(book) {
+    static addToBookList(book) {
         let list = document.querySelector("#book-list");
         let row = document.createElement('tr');
         row.innerHTML = `<td>${book.title}</td>
@@ -23,12 +22,12 @@ class UI {
         list.appendChild(row);
 
     }
-    clearFields() {
+    static clearFields() {
         document.querySelector("#title").value = '';
         document.querySelector("#author").value = '';
         document.querySelector("#isbn").value = '';
     }
-    showAlert(message, className) {
+    static showAlert(message, className) {
         let div = document.createElement('div');
         div.className = `alert ${className}`;
         div.appendChild(document.createTextNode(message));
@@ -40,24 +39,35 @@ class UI {
             document.querySelector('.alert').remove();
         }, 1000)
     }
+
+    static deleteFromBook(target) {
+        if (target.hasAttribute("href")) {
+            target.parentElement.parentElement.remove();
+        }
+    }
 }
 // Add event listener
 form.addEventListener('submit', newBook);
-
+bookList.addEventListener('click', removeBook);
 // Define functions
 function newBook(e) {
-    let ui = new UI();
     let title = document.querySelector("#title").value;
     let author = document.querySelector("#author").value;
     let isbn = document.querySelector("#isbn").value;
     if (title === '' || author === '' || isbn === '') {
-        ui.showAlert("Please fil all the fields", "error");
+        UI.showAlert("Please fil all the fields", "error");
     } else {
         let book = new Book(title, author, isbn);
-        ui.clearFields();
-        ui.addToBookList(book);
-        ui.showAlert("Book added", "success");
+        UI.clearFields();
+        UI.addToBookList(book);
+        UI.showAlert("Book added", "success");
     }
     e.preventDefault();
 
+}
+
+function removeBook(e) {
+    UI.deleteFromBook(e.target);
+    UI.showAlert("Book Removed", "success");
+    e.preventDefault();
 }
